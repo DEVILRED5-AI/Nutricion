@@ -334,6 +334,12 @@ input::placeholder{text-align:center}
 .goalbox{justify-content:center}
 .idea .f{justify-content:space-between}
 .stat .v,.stat .k,.stat .s{text-align:center}
+
+/* Fecha centrada */
+input[type=date]{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 8px;min-height:46px}
+input[type=date]::-webkit-datetime-edit{flex:none;padding:0;text-align:center}
+input[type=date]::-webkit-date-and-time-value{text-align:center;margin:0 auto;min-width:0}
+input[type=date]::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;opacity:0;cursor:pointer}
 </style>
 
 <div class="splash" id="splash" aria-hidden="true">
@@ -426,14 +432,14 @@ input::placeholder{text-align:center}
     <div class="card rise" style="--i:2">
       <div class="chead"><span class="ico" id="ico-bascula"></span><div><h2>Tu punto de partida</h2><p class="hint">Edad y sexo son valores de ejemplo. Ajústalos para afinar el cálculo.</p></div></div>
       <div class="fgrid">
-        <div class="field"><label for="f-peso">Peso actual (kg)</label><input id="f-peso" type="number" inputmode="decimal" step="0.1" min="30" max="200"></div>
-        <div class="field"><label for="f-altura">Altura (cm)</label><input id="f-altura" type="number" inputmode="numeric" step="1" min="120" max="220"></div>
-        <div class="field"><label for="f-edad">Edad</label><input id="f-edad" type="number" inputmode="numeric" step="1" min="15" max="90"></div>
+        <div class="field"><label for="f-peso">Peso actual (kg)</label><input id="f-peso" type="text" inputmode="decimal" step="0.1" min="30" max="200"></div>
+        <div class="field"><label for="f-altura">Altura (cm)</label><input id="f-altura" type="text" inputmode="decimal" step="1" min="120" max="220"></div>
+        <div class="field"><label for="f-edad">Edad</label><input id="f-edad" type="text" inputmode="decimal" step="1" min="15" max="90"></div>
         <div class="field"><label for="f-sexo">Sexo</label><select id="f-sexo"><option value="m">Hombre</option><option value="f">Mujer</option></select></div>
         <div class="field wide"><label for="f-act">Actividad diaria</label><select id="f-act"></select></div>
         <div class="field wide"><label for="f-extra">Ritmo para subir</label><select id="f-extra"></select></div>
-        <div class="field"><label for="f-inicio">Peso inicial (kg)</label><input id="f-inicio" type="number" inputmode="decimal" step="0.1" min="30" max="200"></div>
-        <div class="field"><label for="f-meta">Peso meta (kg)</label><input id="f-meta" type="number" inputmode="decimal" step="0.1" min="30" max="200"></div>
+        <div class="field"><label for="f-inicio">Peso inicial (kg)</label><input id="f-inicio" type="text" inputmode="decimal" step="0.1" min="30" max="200"></div>
+        <div class="field"><label for="f-meta">Peso meta (kg)</label><input id="f-meta" type="text" inputmode="decimal" step="0.1" min="30" max="200"></div>
       </div>
     </div>
 
@@ -448,7 +454,7 @@ input::placeholder{text-align:center}
     <div class="card rise" style="--i:0">
       <div class="chead"><span class="ico" id="ico-peso"></span><div><h2>Peso</h2><p class="hint">Pésate una vez por semana, en ayunas y el mismo día.</p></div></div>
       <form class="inline" id="wform">
-        <div class="field"><label for="wkg">Peso (kg)</label><input id="wkg" type="number" inputmode="decimal" step="0.1" min="30" max="200" placeholder="51,5"></div>
+        <div class="field"><label for="wkg">Peso (kg)</label><input id="wkg" type="text" inputmode="decimal" step="0.1" min="30" max="200" placeholder="51,5"></div>
         <div class="field"><label for="wdate">Fecha</label><input id="wdate" type="date"></div>
         <button class="btn primary" type="submit">Registrar</button>
       </form>
@@ -496,10 +502,10 @@ input::placeholder{text-align:center}
       <form id="cform" style="display:grid;gap:12px;margin-top:8px">
         <div class="field"><label for="cn">Nombre</label><input id="cn" type="text" maxlength="60" placeholder="Ej. Sancocho, 1 plato"></div>
         <div class="fgrid" style="margin-top:0">
-          <div class="field"><label for="ck">Calorías (kcal)</label><input id="ck" type="number" inputmode="numeric" min="1" max="5000"></div>
-          <div class="field"><label for="cp">Proteína (g)</label><input id="cp" type="number" inputmode="decimal" min="0" max="500"></div>
-          <div class="field"><label for="cc">Carbohidratos (g)</label><input id="cc" type="number" inputmode="decimal" min="0" max="800"></div>
-          <div class="field"><label for="cg">Grasas (g)</label><input id="cg" type="number" inputmode="decimal" min="0" max="500"></div>
+          <div class="field"><label for="ck">Calorías (kcal)</label><input id="ck" type="text" inputmode="decimal" min="1" max="5000"></div>
+          <div class="field"><label for="cp">Proteína (g)</label><input id="cp" type="text" inputmode="decimal" min="0" max="500"></div>
+          <div class="field"><label for="cc">Carbohidratos (g)</label><input id="cc" type="text" inputmode="decimal" min="0" max="800"></div>
+          <div class="field"><label for="cg">Grasas (g)</label><input id="cg" type="text" inputmode="decimal" min="0" max="500"></div>
         </div>
         <button class="btn primary" type="submit">Agregar</button>
       </form>
@@ -1072,6 +1078,7 @@ function renderStages(){
   });
 }
 
+function pn(v){var s=String(v==null?'':v).trim().replace(',','.');var x=parseFloat(s);return isFinite(x)?x:NaN;}
 function init(){
   try{var vm=document.querySelector('meta[name=viewport]');if(vm)vm.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover');}catch(e){}
   ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault();});});
@@ -1095,7 +1102,7 @@ function init(){
   var nums=[['f-peso','peso',30,200],['f-altura','altura',120,220],['f-edad','edad',15,90],['f-meta','meta',30,200],['f-inicio','inicio',30,200]];
   nums.forEach(function(n){
     $(n[0]).addEventListener('input',function(){
-      var v=parseFloat(this.value);
+      var v=pn(this.value);
       if(isFinite(v)&&v>=n[2]&&v<=n[3]){S.profile[n[1]]=v;save();renderMetas();renderHoy();}
     });
   });
@@ -1117,10 +1124,10 @@ function init(){
   $('cform').addEventListener('submit',function(ev){
     ev.preventDefault();
     var name=$('cn').value.trim();
-    var k=parseFloat($('ck').value);
+    var k=pn($('ck').value);
     if(!name||!(k>0)){$('sheetStatus').textContent='Escribe un nombre y las calorías.';return;}
     var meal=$('sheetMeal').value;
-    dayList().push({id:uid(),meal:meal,fid:null,n:name,por:'1 porción',k:k,p:parseFloat($('cp').value)||0,c:parseFloat($('cc').value)||0,g:parseFloat($('cg').value)||0,q:1});
+    dayList().push({id:uid(),meal:meal,fid:null,n:name,por:'1 porción',k:k,p:pn($('cp').value)||0,c:pn($('cc').value)||0,g:pn($('cg').value)||0,q:1});
     save();renderHoy();
     $('sheetStatus').textContent='Agregado a '+meal+': '+name;
     this.reset();
@@ -1128,7 +1135,7 @@ function init(){
 
   $('wform').addEventListener('submit',function(ev){
     ev.preventDefault();
-    var kg=parseFloat($('wkg').value);
+    var kg=pn($('wkg').value);
     var d=$('wdate').value||today;
     if(!(kg>=30&&kg<=200))return;
     var found=false;
