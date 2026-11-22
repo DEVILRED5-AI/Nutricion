@@ -340,6 +340,16 @@ input[type=date]{position:relative;display:flex;align-items:center;justify-conte
 input[type=date]::-webkit-datetime-edit{flex:none;padding:0;text-align:center}
 input[type=date]::-webkit-date-and-time-value{text-align:center;margin:0 auto;min-width:0}
 input[type=date]::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;opacity:0;cursor:pointer}
+
+/* Comidas plegables */
+.meal-head{gap:8px}
+.meal-tg{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:0;background:transparent;color:var(--ink);padding:4px 0;cursor:pointer;font:inherit;text-align:left;-webkit-tap-highlight-color:transparent}
+.meal-tx{display:grid;gap:1px;min-width:0;flex:1;text-align:left}
+.meal-tx h3{flex:none}
+.chev{display:flex;color:var(--muted);transition:transform .2s;margin-left:auto}
+.meal-tg[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.meal-body{animation:fadein .25s ease}
+.sec-title .btn.small{min-height:34px;font-size:13px}
 </style>
 
 <div class="splash" id="splash" aria-hidden="true">
@@ -398,7 +408,7 @@ input[type=date]::-webkit-calendar-picker-indicator{position:absolute;inset:0;wi
     </div>
 
     <div class="rise" style="--i:2">
-      <div class="sec-title"><h2>Comidas del día</h2></div>
+      <div class="sec-title"><h2>Comidas del día</h2><button class="btn small" type="button" id="toggleAll">Expandir todo</button></div>
       <div class="card flush" id="meals"></div>
     </div>
 
@@ -619,6 +629,7 @@ function addDays(s,n){var d=parse(s);d.setDate(d.getDate()+n);return ymd(d);}
 var today=ymd(new Date());
 var cur=today;
 var sheetOpen=false;
+var openMeals={};
 var booted=REDUCE;
 
 function defState(){return {profile:{peso:51,inicio:51,altura:172,edad:22,sexo:'m',act:1.375,extra:400,meta:55},logs:{},habits:{},weights:[{d:today,kg:51}]};}
@@ -715,14 +726,23 @@ function renderHoy(){
     var sec=el('section','meal');
     var head=el('div','meal-head');
     var mi=el('span','mi');mi.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">'+MEALICON[m]+'</svg>';
-    head.appendChild(mi);
-    head.appendChild(el('h3',null,m));
-    head.appendChild(el('span','meal-k',items.length?nf(sub)+' kcal':''));
+    var open=!!openMeals[m],cnt=items.length;
+    var body=el('div','meal-body');
+    var tg=el('button','meal-tg');tg.type='button';tg.setAttribute('aria-expanded',open?'true':'false');
+    tg.appendChild(mi);
+    var tx=el('span','meal-tx');
+    tx.appendChild(el('h3',null,m));
+    tx.appendChild(el('span','meal-k',cnt?nf(sub)+' kcal · '+cnt+(cnt===1?' alimento':' alimentos'):'Sin alimentos'));
+    tg.appendChild(tx);
+    var chev=el('span','chev');chev.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    tg.appendChild(chev);
+    tg.addEventListener('click',function(){openMeals[m]=!openMeals[m];renderHoy();});
+    head.appendChild(tg);
     var add=el('button','btn small','+ Agregar');add.type='button';
     add.addEventListener('click',function(){openSheet(m);});
     head.appendChild(add);
     sec.appendChild(head);
-    if(!items.length)sec.appendChild(el('p','empty','Sin alimentos todavía.'));
+    if(!items.length)body.appendChild(el('p','empty','Sin alimentos todavía.'));
     items.forEach(function(e){
       var row=el('div','item');
       row.appendChild(icoEl(e.fid||'plato',44,14));
@@ -740,10 +760,13 @@ function renderHoy(){
       pl.addEventListener('click',function(){changeQ(e.id,0.5);});
       st.appendChild(mn);st.appendChild(el('span','q',fq(e.q)));st.appendChild(pl);
       row.appendChild(st);
-      sec.appendChild(row);
+      body.appendChild(row);
     });
+    if(open)sec.appendChild(body);
     box.appendChild(sec);
   });
+  var anyOpen=MEALS.some(function(m){return openMeals[m];});
+  $('toggleAll').textContent=anyOpen?'Contraer todo':'Expandir todo';
   var h=habitsFor(cur);
   var cb=$('checks');cb.textContent='';
   var n=0;
@@ -780,6 +803,7 @@ function addTo(f,meal){
   var list=dayList();
   var ex=null;
   list.forEach(function(e){if(e.fid===f.id&&e.meal===meal)ex=e;});
+  openMeals[meal]=true;
   if(ex)ex.q+=1;
   else list.push({id:uid(),meal:meal,fid:f.id,n:f.n,por:f.por,k:f.k,p:f.p,c:f.c,g:f.g,q:1});
   save();renderHoy();
@@ -1116,6 +1140,7 @@ function init(){
   var tabs=document.querySelectorAll('.tab');
   for(var i=0;i<tabs.length;i++){(function(t){t.addEventListener('click',function(){setView(t.getAttribute('data-view'));});})(tabs[i]);}
 
+  $('toggleAll').addEventListener('click',function(){var any=MEALS.some(function(m){return openMeals[m];});MEALS.forEach(function(m){openMeals[m]=!any;});renderHoy();});
   $('sheetClose').addEventListener('click',closeSheet);
   $('sheet').addEventListener('click',function(e){if(e.target===this)closeSheet();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&sheetOpen)closeSheet();});
@@ -1127,6 +1152,7 @@ function init(){
     var k=pn($('ck').value);
     if(!name||!(k>0)){$('sheetStatus').textContent='Escribe un nombre y las calorías.';return;}
     var meal=$('sheetMeal').value;
+    openMeals[meal]=true;
     dayList().push({id:uid(),meal:meal,fid:null,n:name,por:'1 porción',k:k,p:pn($('cp').value)||0,c:pn($('cc').value)||0,g:pn($('cg').value)||0,q:1});
     save();renderHoy();
     $('sheetStatus').textContent='Agregado a '+meal+': '+name;
