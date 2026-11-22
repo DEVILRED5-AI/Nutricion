@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}</style>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><style>:root{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}</style>
 <title>Plato Diario</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -319,6 +319,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .stg.now{border-color:var(--accent);background:var(--accent-soft)}
 .stg:not(.on) .stg-i{filter:grayscale(1);opacity:.38}
 .stg .kg{font-size:11.5px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* ---- Sin zoom y texto centrado ---- */
+html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+input[type=number],input[type=text],input[type=date],input[type=search],select{text-align:center;text-align-last:center;padding:0 6px;font-size:15px}
+input[type=date]::-webkit-date-and-time-value{text-align:center}
+input::placeholder{text-align:center}
+.field label{text-align:center}
+.btn,.add,.food-add,.iconbtn,.step button,.rm,.pet-pill,.glass{display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.btn{line-height:1.1;text-align:center}
+.tab{text-align:center}
+.stat,.idea,.notice,.faltan,.bubble,.stg,.pet-meter .hint,.card.dark>.eyebrow{text-align:center}
+.goalbox{justify-content:center}
+.idea .f{justify-content:space-between}
+.stat .v,.stat .k,.stat .s{text-align:center}
 </style>
 
 <div class="splash" id="splash" aria-hidden="true">
@@ -500,7 +514,7 @@ var REDUCE=false;
 try{REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
 var MEALS=['Desayuno','Media mañana','Almuerzo','Merienda','Cena'];
 var ACT=[['Poco movimiento (estudio sentado)',1.2],['Ligera (camino a diario)',1.375],['Moderada (me muevo mucho o entreno 3 a 5 días)',1.55],['Alta (entreno fuerte casi a diario)',1.725]];
-var EXTRA=[[300,'+300 kcal · unos 0,27 kg por semana'],[400,'+400 kcal · unos 0,36 kg por semana'],[500,'+500 kcal · unos 0,45 kg por semana']];
+var EXTRA=[[300,'+300 kcal · 0,27 kg por semana'],[400,'+400 kcal · 0,36 kg por semana'],[500,'+500 kcal · 0,45 kg por semana']];
 var HABITS=[
   ['comidas','Hice 5 comidas sin saltarme ninguna'],
   ['proteina','Incluí proteína en cada comida'],
@@ -1058,6 +1072,9 @@ function renderStages(){
 }
 
 function init(){
+  try{var vm=document.querySelector('meta[name=viewport]');if(vm)vm.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover');}catch(e){}
+  ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault();});});
+  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});
   $('heroPlate').innerHTML=plateSvg(116,'hp');
   $('splashPlate').innerHTML=plateSvg(150,'sp');
   $('ico-bascula').innerHTML=ic('bascula',44,14);
